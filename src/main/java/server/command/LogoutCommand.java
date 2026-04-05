@@ -4,13 +4,9 @@ import server.network.Request;
 import server.network.Response;
 import server.service.EducationService;
 
-/**
- * Command for user logout.
- * Ends the user session.
- */
 public class LogoutCommand implements Command {
     private EducationService educationService = EducationService.getInstance();
-    
+
     @Override
     public Response execute(Request request) {
         try {

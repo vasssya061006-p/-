@@ -9,11 +9,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * JDBC implementation of AcademicRecordDao.
- */
 public class AcademicRecordDaoImpl implements AcademicRecordDao {
-    
+
     @Override
     public AcademicRecord findById(int id) throws SQLException {
         String sql = "SELECT * FROM academic_records WHERE id = ?";
@@ -30,7 +27,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
         }
         return null;
     }
-    
+
     @Override
     public List<AcademicRecord> findByStudentId(int studentId) throws SQLException {
         String sql = "SELECT ar.*, c.name as course_name FROM academic_records ar " +
@@ -38,7 +35,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
                      "WHERE ar.student_id = ? ORDER BY ar.grade_date DESC";
         return executeQuery(sql, studentId);
     }
-    
+
     @Override
     public List<AcademicRecord> findByGroupId(int groupId) throws SQLException {
         String sql = "SELECT ar.*, c.name as course_name FROM academic_records ar " +
@@ -53,7 +50,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public List<AcademicRecord> findByCourseId(int courseId) throws SQLException {
         String sql = "SELECT ar.*, c.name as course_name FROM academic_records ar " +
@@ -61,7 +58,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
                      "WHERE ar.course_id = ? ORDER BY ar.grade_date DESC";
         return executeQuery(sql, courseId);
     }
-    
+
     @Override
     public List<AcademicRecord> findBySemester(String semester) throws SQLException {
         String sql = "SELECT ar.*, c.name as course_name FROM academic_records ar " +
@@ -69,7 +66,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
                      "WHERE ar.semester = ? ORDER BY ar.student_id, ar.grade_date DESC";
         return executeQuery(sql, semester);
     }
-    
+
     @Override
     public List<AcademicRecord> findByStudentAndCourse(int studentId, int courseId) throws SQLException {
         String sql = "SELECT ar.*, c.name as course_name FROM academic_records ar " +
@@ -84,7 +81,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public boolean insert(AcademicRecord record) throws SQLException {
         String sql = "INSERT INTO academic_records (student_id, course_id, course_name, student_name, " +
@@ -102,7 +99,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
             stmt.setString(8, record.getAttendanceStatus());
             stmt.setString(9, record.getSemester());
             stmt.setString(10, record.getNotes());
-            
+
             int rows = stmt.executeUpdate();
             if (rows > 0) {
                 try (ResultSet keys = stmt.getGeneratedKeys()) {
@@ -117,7 +114,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
         }
         return false;
     }
-    
+
     @Override
     public boolean update(AcademicRecord record) throws SQLException {
         String sql = "UPDATE academic_records SET grade_value = ?, grade_type = ?, " +
@@ -134,7 +131,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM academic_records WHERE id = ?";
@@ -146,26 +143,26 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public double getAverageGradeByStudent(int studentId) throws SQLException {
         String sql = "SELECT AVG(grade_value) as avg_grade FROM academic_records WHERE student_id = ?";
         return executeAverage(sql, studentId);
     }
-    
+
     @Override
     public double getAverageGradeByCourse(int courseId) throws SQLException {
         String sql = "SELECT AVG(grade_value) as avg_grade FROM academic_records WHERE course_id = ?";
         return executeAverage(sql, courseId);
     }
-    
+
     @Override
     public double getAverageGradeByGroup(int groupId) throws SQLException {
         String sql = "SELECT AVG(ar.grade_value) as avg_grade FROM academic_records ar " +
                      "INNER JOIN users u ON ar.student_id = u.id WHERE u.group_id = ?";
         return executeAverage(sql, groupId);
     }
-    
+
     @Override
     public int countAbsencesByStudent(int studentId) throws SQLException {
         String sql = "SELECT COUNT(*) as absence_count FROM academic_records " +
@@ -183,7 +180,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
         }
         return 0;
     }
-    
+
     @Override
     public List<AcademicRecord> getFailingGrades(double threshold) throws SQLException {
         String sql = "SELECT ar.*, c.name as course_name FROM academic_records ar " +
@@ -198,7 +195,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     private List<AcademicRecord> executeQuery(String sql, Object... params) throws SQLException {
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -210,7 +207,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     private List<AcademicRecord> executeResultSet(ResultSet rs) throws SQLException {
         List<AcademicRecord> records = new ArrayList<>();
         while (rs.next()) {
@@ -218,7 +215,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
         }
         return records;
     }
-    
+
     private double executeAverage(String sql, Object param) throws SQLException {
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -233,7 +230,7 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
         }
         return 0.0;
     }
-    
+
     private AcademicRecord mapResultSetToRecord(ResultSet rs) throws SQLException {
         AcademicRecord record = new AcademicRecord();
         record.setId(rs.getInt("id"));
@@ -243,12 +240,12 @@ public class AcademicRecordDaoImpl implements AcademicRecordDao {
         record.setStudentName(rs.getString("student_name"));
         record.setGradeValue(rs.getDouble("grade_value"));
         record.setGradeType(rs.getString("grade_type"));
-        
+
         Date gradeDate = rs.getDate("grade_date");
         if (gradeDate != null) {
             record.setGradeDate(gradeDate.toLocalDate());
         }
-        
+
         record.setAttendanceStatus(rs.getString("attendance_status"));
         record.setSemester(rs.getString("semester"));
         record.setNotes(rs.getString("notes"));

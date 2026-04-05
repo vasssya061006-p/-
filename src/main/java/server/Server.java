@@ -15,8 +15,7 @@ public class Server {
     public static void main(String[] args) {
         int port = 8080;
         int maxThreads = 50;
-        
-        // Load configuration
+
         try {
             Properties props = new Properties();
             var inputStream = Server.class.getClassLoader().getResourceAsStream("config.properties");
@@ -31,8 +30,7 @@ public class Server {
         } catch (Exception e) {
             System.err.println("Error loading configuration: " + e.getMessage());
         }
-        
-        // Initialize database connection
+
         try {
             System.out.println("Initializing database connection...");
             DatabaseManager dbManager = DatabaseManager.getInstance();
@@ -42,7 +40,7 @@ public class Server {
             System.err.println("WARNING: Database initialization failed: " + e.getMessage());
             System.err.println("Server will start without database. Some features will not work.");
         }
-        
+
         ExecutorService threadPool = Executors.newFixedThreadPool(maxThreads);
 
         System.out.println("Starting server on port " + port);
@@ -61,7 +59,6 @@ public class Server {
             System.err.println("Error starting server: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            // Cleanup
             DatabaseManager.getInstance().close();
             System.out.println("Server stopped.");
         }

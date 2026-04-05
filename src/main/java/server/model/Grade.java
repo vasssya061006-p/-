@@ -26,7 +26,6 @@ public class Grade implements Serializable {
         this.date = date;
     }
 
-    // Геттеры
     public Integer getId() { return id; }
     public Integer getStudentId() { return studentId; }
     public String getStudentName() { return studentName; }
@@ -35,7 +34,6 @@ public class Grade implements Serializable {
     public String getGradeType() { return gradeType; }
     public String getDate() { return date; }
 
-    // Сеттеры
     public void setId(Integer id) { this.id = id; }
     public void setStudentId(Integer studentId) { this.studentId = studentId; }
     public void setStudentName(String studentName) { this.studentName = studentName; }

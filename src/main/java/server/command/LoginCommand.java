@@ -6,10 +6,6 @@ import server.model.User;
 import server.service.AuthenticationException;
 import server.service.EducationService;
 
-/**
- * Command for user authentication (Use Case 1).
- * Validates credentials and creates session.
- */
 public class LoginCommand implements Command {
     private EducationService educationService = EducationService.getInstance();
 
@@ -26,7 +22,6 @@ public class LoginCommand implements Command {
                 return new Response(false, "Invalid login or password", null);
             }
 
-            // Store user ID in request for session tracking
             request.setUserId(user.getId());
 
             return new Response(true, "Login successful", user);

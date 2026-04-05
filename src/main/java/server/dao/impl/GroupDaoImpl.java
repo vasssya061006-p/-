@@ -8,11 +8,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * JDBC implementation of GroupDao.
- */
 public class GroupDaoImpl implements GroupDao {
-    
+
     @Override
     public Group findById(int id) throws SQLException {
         String sql = "SELECT * FROM groups WHERE id = ?";
@@ -29,7 +26,7 @@ public class GroupDaoImpl implements GroupDao {
         }
         return null;
     }
-    
+
     @Override
     public List<Group> findAll() throws SQLException {
         String sql = "SELECT * FROM groups ORDER BY name";
@@ -45,7 +42,7 @@ public class GroupDaoImpl implements GroupDao {
         }
         return groups;
     }
-    
+
     @Override
     public List<Group> findByCuratorId(int curatorId) throws SQLException {
         String sql = "SELECT * FROM groups WHERE curator_id = ? ORDER BY name";
@@ -63,7 +60,7 @@ public class GroupDaoImpl implements GroupDao {
         }
         return groups;
     }
-    
+
     @Override
     public boolean insert(Group group) throws SQLException {
         String sql = "INSERT INTO groups (name, curator_id, year_of_study, student_count) " +
@@ -74,7 +71,7 @@ public class GroupDaoImpl implements GroupDao {
             stmt.setObject(2, group.getCuratorId(), Types.INTEGER);
             stmt.setInt(3, group.getYearOfStudy());
             stmt.setInt(4, group.getStudentCount());
-            
+
             int rows = stmt.executeUpdate();
             if (rows > 0) {
                 try (ResultSet keys = stmt.getGeneratedKeys()) {
@@ -89,7 +86,7 @@ public class GroupDaoImpl implements GroupDao {
         }
         return false;
     }
-    
+
     @Override
     public boolean update(Group group) throws SQLException {
         String sql = "UPDATE groups SET name = ?, curator_id = ?, year_of_study = ?, " +
@@ -106,7 +103,7 @@ public class GroupDaoImpl implements GroupDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM groups WHERE id = ?";
@@ -118,7 +115,7 @@ public class GroupDaoImpl implements GroupDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public int getStudentCount(int groupId) throws SQLException {
         String sql = "SELECT COUNT(*) as student_count FROM users WHERE group_id = ? AND role = 'STUDENT'";
@@ -135,7 +132,7 @@ public class GroupDaoImpl implements GroupDao {
         }
         return 0;
     }
-    
+
     @Override
     public double getAverageGrade(int groupId) throws SQLException {
         String sql = "SELECT AVG(ar.grade_value) as avg_grade FROM academic_records ar " +
@@ -153,7 +150,7 @@ public class GroupDaoImpl implements GroupDao {
         }
         return 0.0;
     }
-    
+
     private Group mapResultSetToGroup(ResultSet rs) throws SQLException {
         Group group = new Group();
         group.setId(rs.getInt("id"));

@@ -6,10 +6,6 @@ import server.command.CommandFactory;
 import java.io.*;
 import java.net.Socket;
 
-/**
- * Handles a single client connection in a separate thread.
- * Reads Request objects, executes commands, and returns Response objects.
- */
 public class ClientHandler implements Runnable {
     private Socket socket;
     private ObjectInputStream input;
@@ -34,7 +30,7 @@ public class ClientHandler implements Runnable {
                     break;
                 }
 
-                System.out.println("Received command: " + request.getCommand() + 
+                System.out.println("Received command: " + request.getCommand() +
                                  " from user " + request.getUserId());
 
                 Command command = CommandFactory.getCommand(request.getCommand());
@@ -46,11 +42,9 @@ public class ClientHandler implements Runnable {
                 Response response = command.execute(request);
                 sendResponse(response);
 
-                // Log response status
                 System.out.println("Sent response: " + (response.isSuccess() ? "SUCCESS" : "FAILED") +
                                  " - " + response.getMessage());
 
-                // Disconnect on logout
                 if ("LOGOUT".equals(request.getCommand())) {
                     System.out.println("Client logged out, closing connection");
                     break;
@@ -82,7 +76,7 @@ public class ClientHandler implements Runnable {
             output.flush();
         }
     }
-    
+
     private void closeConnection() {
         try {
             if (input != null) input.close();

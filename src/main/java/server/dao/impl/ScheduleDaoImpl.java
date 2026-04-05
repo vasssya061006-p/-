@@ -9,11 +9,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * JDBC implementation of ScheduleDao.
- */
 public class ScheduleDaoImpl implements ScheduleDao {
-    
+
     @Override
     public Schedule findById(int id) throws SQLException {
         String sql = "SELECT s.*, c.name as course_name, g.name as group_name, " +
@@ -35,7 +32,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
         }
         return null;
     }
-    
+
     @Override
     public List<Schedule> findByGroupId(int groupId) throws SQLException {
         String sql = "SELECT s.*, c.name as course_name, g.name as group_name, " +
@@ -46,7 +43,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
                      "WHERE s.group_id = ? ORDER BY s.day_of_week, s.start_time";
         return executeQuery(sql, groupId);
     }
-    
+
     @Override
     public List<Schedule> findByTeacherId(int teacherId) throws SQLException {
         String sql = "SELECT s.*, c.name as course_name, g.name as group_name, " +
@@ -57,7 +54,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
                      "WHERE s.teacher_id = ? ORDER BY s.day_of_week, s.start_time";
         return executeQuery(sql, teacherId);
     }
-    
+
     @Override
     public List<Schedule> findByCourseId(int courseId) throws SQLException {
         String sql = "SELECT s.*, c.name as course_name, g.name as group_name, " +
@@ -68,7 +65,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
                      "WHERE s.course_id = ? ORDER BY s.day_of_week, s.start_time";
         return executeQuery(sql, courseId);
     }
-    
+
     @Override
     public List<Schedule> findByRoom(String roomNumber) throws SQLException {
         String sql = "SELECT s.*, c.name as course_name, g.name as group_name, " +
@@ -79,7 +76,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
                      "WHERE s.room_number = ? ORDER BY s.day_of_week, s.start_time";
         return executeQuery(sql, roomNumber);
     }
-    
+
     @Override
     public List<Schedule> findByDayOfWeek(String dayOfWeek) throws SQLException {
         String sql = "SELECT s.*, c.name as course_name, g.name as group_name, " +
@@ -90,7 +87,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
                      "WHERE s.day_of_week = ? ORDER BY s.start_time, s.room_number";
         return executeQuery(sql, dayOfWeek);
     }
-    
+
     @Override
     public List<Schedule> findBySemester(String semester) throws SQLException {
         String sql = "SELECT s.*, c.name as course_name, g.name as group_name, " +
@@ -101,7 +98,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
                      "WHERE s.semester = ? ORDER BY s.day_of_week, s.start_time";
         return executeQuery(sql, semester);
     }
-    
+
     @Override
     public boolean insert(Schedule schedule) throws SQLException {
         String sql = "INSERT INTO schedules (course_id, group_id, teacher_id, room_number, " +
@@ -122,7 +119,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
             stmt.setString(10, schedule.getCourseName());
             stmt.setString(11, schedule.getGroupName());
             stmt.setString(12, schedule.getTeacherName());
-            
+
             int rows = stmt.executeUpdate();
             if (rows > 0) {
                 try (ResultSet keys = stmt.getGeneratedKeys()) {
@@ -137,7 +134,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
         }
         return false;
     }
-    
+
     @Override
     public boolean update(Schedule schedule) throws SQLException {
         String sql = "UPDATE schedules SET course_id = ?, group_id = ?, teacher_id = ?, " +
@@ -160,7 +157,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM schedules WHERE id = ?";
@@ -172,7 +169,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public boolean hasConflict(Schedule schedule) throws SQLException {
         String sql = "SELECT COUNT(*) as conflict_count FROM schedules WHERE id != ? AND (" +
@@ -191,7 +188,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
             stmt.setObject(8, schedule.getGroupId(), Types.INTEGER);
             stmt.setString(9, schedule.getDayOfWeek());
             stmt.setObject(10, schedule.getStartTime() != null ? Timestamp.valueOf(schedule.getStartTime()) : null, Types.TIMESTAMP);
-            
+
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("conflict_count") > 0;
@@ -202,7 +199,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
         }
         return false;
     }
-    
+
     @Override
     public List<Schedule> findByRoomAndTime(String roomNumber, String dayOfWeek, String startTime) throws SQLException {
         String sql = "SELECT s.*, c.name as course_name, g.name as group_name, " +
@@ -221,7 +218,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public List<Schedule> findByTeacherAndTime(int teacherId, String dayOfWeek, String startTime) throws SQLException {
         String sql = "SELECT s.*, c.name as course_name, g.name as group_name, " +
@@ -240,7 +237,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public List<Schedule> findByGroupAndTime(int groupId, String dayOfWeek, String startTime) throws SQLException {
         String sql = "SELECT s.*, c.name as course_name, g.name as group_name, " +
@@ -259,7 +256,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     private List<Schedule> executeQuery(String sql, Object... params) throws SQLException {
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -271,7 +268,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     private List<Schedule> executeResultSet(ResultSet rs) throws SQLException {
         List<Schedule> schedules = new ArrayList<>();
         while (rs.next()) {
@@ -279,7 +276,7 @@ public class ScheduleDaoImpl implements ScheduleDao {
         }
         return schedules;
     }
-    
+
     private Schedule mapResultSetToSchedule(ResultSet rs) throws SQLException {
         Schedule schedule = new Schedule();
         schedule.setId(rs.getInt("id"));
@@ -290,17 +287,17 @@ public class ScheduleDaoImpl implements ScheduleDao {
         schedule.setTeacherId(rs.getObject("teacher_id", Integer.class));
         schedule.setTeacherName(rs.getString("teacher_name"));
         schedule.setRoomNumber(rs.getString("room_number"));
-        
+
         Timestamp startTs = rs.getTimestamp("start_time");
         if (startTs != null) {
             schedule.setStartTime(startTs.toLocalDateTime());
         }
-        
+
         Timestamp endTs = rs.getTimestamp("end_time");
         if (endTs != null) {
             schedule.setEndTime(endTs.toLocalDateTime());
         }
-        
+
         schedule.setDayOfWeek(rs.getString("day_of_week"));
         schedule.setLessonType(rs.getString("lesson_type"));
         schedule.setSemester(rs.getString("semester"));

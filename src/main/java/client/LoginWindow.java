@@ -11,10 +11,6 @@ import server.model.User;
 import server.network.Request;
 import server.network.Response;
 
-/**
- * JavaFX login window for the education system.
- * Connects to server and authenticates users.
- */
 public class LoginWindow extends Application {
     private TextField loginField;
     private PasswordField passwordField;
@@ -29,9 +25,8 @@ public class LoginWindow extends Application {
             return;
         }
 
-        // Create UI elements
         GridPane grid = createLoginForm();
-        
+
         Scene scene = new Scene(grid, 400, 250);
         scene.getStylesheets().add(getClass().getResource("/client/styles.css").toExternalForm());
         primaryStage.setTitle("Education System - Login");
@@ -46,34 +41,28 @@ public class LoginWindow extends Application {
         grid.setHgap(10);
         grid.setVgap(10);
 
-        // Title
         Label titleLabel = new Label("Education Management System");
         titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         GridPane.setConstraints(titleLabel, 0, 0, 2, 1);
 
-        // Login field
         Label loginLabel = new Label("Login:");
         loginField = new TextField();
         loginField.setPromptText("Enter your login");
-        
-        // Password field
+
         Label passwordLabel = new Label("Password:");
         passwordField = new PasswordField();
         passwordField.setPromptText("Enter your password");
-        
-        // Login button
+
         Button loginButton = new Button("Login");
         loginButton.setDefaultButton(true);
         loginButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;");
         loginButton.setDisable(true);
-        
-        // Enable button only when fields are not empty
-        loginField.textProperty().addListener((obs, old, newVal) -> 
+
+        loginField.textProperty().addListener((obs, old, newVal) ->
             loginButton.setDisable(newVal.trim().isEmpty()));
-        passwordField.textProperty().addListener((obs, old, newVal) -> 
+        passwordField.textProperty().addListener((obs, old, newVal) ->
             loginButton.setDisable(newVal.trim().isEmpty()));
 
-        // Layout
         grid.add(titleLabel, 0, 0, 2, 1);
         grid.add(loginLabel, 0, 1);
         grid.add(loginField, 1, 1);
@@ -81,7 +70,6 @@ public class LoginWindow extends Application {
         grid.add(passwordField, 1, 2);
         grid.add(loginButton, 1, 3);
 
-        // Event handlers
         loginButton.setOnAction(e -> login());
         passwordField.setOnAction(e -> login());
 
@@ -97,7 +85,6 @@ public class LoginWindow extends Application {
             return;
         }
 
-        // Send login request (password is sent in plain text, hashed on server)
         Request request = new Request("LOGIN", new Object[]{login, password});
         Response response = connection.sendRequest(request);
 
@@ -116,8 +103,7 @@ public class LoginWindow extends Application {
             Stage mainStage = new Stage();
             MainWindow mainWindow = new MainWindow(connection, user);
             mainWindow.start(mainStage);
-            
-            // Close login window
+
             Stage loginStage = (Stage) loginField.getScene().getWindow();
             loginStage.close();
         } catch (Exception e) {

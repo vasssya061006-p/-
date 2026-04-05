@@ -7,11 +7,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-/**
- * Singleton DatabaseManager for managing JDBC database connections.
- * Implements the Singleton pattern to ensure only one connection pool manager exists.
- * Reads configuration from config.properties file.
- */
 public class DatabaseManager {
     private static volatile DatabaseManager instance;
     private Connection connection;
@@ -20,15 +15,11 @@ public class DatabaseManager {
     private String dbPassword;
     private String dbDriver;
     private boolean initialized = false;
-    
+
     private DatabaseManager() {
         loadConfiguration();
     }
-    
-    /**
-     * Returns the singleton instance of DatabaseManager.
-     * Thread-safe implementation using double-checked locking.
-     */
+
     public static DatabaseManager getInstance() {
         if (instance == null) {
             synchronized (DatabaseManager.class) {
@@ -39,10 +30,7 @@ public class DatabaseManager {
         }
         return instance;
     }
-    
-    /**
-     * Loads database configuration from config.properties file.
-     */
+
     private void loadConfiguration() {
         Properties props = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
@@ -61,30 +49,23 @@ public class DatabaseManager {
             setDefaults();
         }
     }
-    
+
     private void setDefaults() {
         dbDriver = "org.h2.Driver";
         dbUrl = "jdbc:h2:./education_db";
         dbUser = "sa";
         dbPassword = "";
     }
-    
-    /**
-     * Initializes the database driver and creates connection.
-     */
+
     public synchronized void initialize() throws SQLException, ClassNotFoundException {
         if (initialized) return;
-        
+
         Class.forName(dbDriver);
         connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
         initialized = true;
         System.out.println("Database connection established: " + dbUrl);
     }
-    
-    /**
-     * Returns the active database connection.
-     * Initializes if not already done.
-     */
+
     public synchronized Connection getConnection() throws SQLException, ClassNotFoundException {
         if (!initialized) {
             initialize();
@@ -94,10 +75,7 @@ public class DatabaseManager {
         }
         return connection;
     }
-    
-    /**
-     * Closes the database connection.
-     */
+
     public synchronized void close() {
         if (connection != null) {
             try {
@@ -110,10 +88,7 @@ public class DatabaseManager {
         }
         initialized = false;
     }
-    
-    /**
-     * Checks if the database is connected.
-     */
+
     public synchronized boolean isConnected() {
         try {
             return initialized && connection != null && !connection.isClosed();
@@ -121,18 +96,14 @@ public class DatabaseManager {
             return false;
         }
     }
-    
-    /**
-     * Resets the singleton instance (useful for testing).
-     */
+
     public static synchronized void resetInstance() {
         if (instance != null) {
             instance.close();
             instance = null;
         }
     }
-    
-    // Getters for configuration
+
     public String getDbUrl() { return dbUrl; }
     public String getDbUser() { return dbUser; }
 }

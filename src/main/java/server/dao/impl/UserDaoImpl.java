@@ -7,11 +7,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * JDBC implementation of UserDao.
- */
 public class UserDaoImpl implements UserDao {
-    
+
     @Override
     public User findById(int id) throws SQLException {
         String sql = "SELECT * FROM users WHERE id = ?";
@@ -28,7 +25,7 @@ public class UserDaoImpl implements UserDao {
         }
         return null;
     }
-    
+
     @Override
     public User findByLogin(String login) throws SQLException {
         String sql = "SELECT * FROM users WHERE login = ? AND is_active = true";
@@ -45,7 +42,7 @@ public class UserDaoImpl implements UserDao {
         }
         return null;
     }
-    
+
     @Override
     public List<User> findAll() throws SQLException {
         String sql = "SELECT * FROM users ORDER BY role, full_name";
@@ -61,7 +58,7 @@ public class UserDaoImpl implements UserDao {
         }
         return users;
     }
-    
+
     @Override
     public List<User> findByRole(String role) throws SQLException {
         String sql = "SELECT * FROM users WHERE role = ? ORDER BY full_name";
@@ -79,7 +76,7 @@ public class UserDaoImpl implements UserDao {
         }
         return users;
     }
-    
+
     @Override
     public boolean insert(User user) throws SQLException {
         String sql = "INSERT INTO users (login, password_hash, full_name, role, group_id, is_active, " +
@@ -94,8 +91,7 @@ public class UserDaoImpl implements UserDao {
             stmt.setString(4, user.getRole());
             stmt.setObject(5, user.getGroupId(), Types.INTEGER);
             stmt.setBoolean(6, user.isActive());
-            
-            // Role-specific fields
+
             if (user instanceof Student) {
                 Student s = (Student) user;
                 stmt.setString(7, s.getGroup());
@@ -106,7 +102,7 @@ public class UserDaoImpl implements UserDao {
                 stmt.setNull(8, Types.INTEGER);
                 stmt.setNull(9, Types.VARCHAR);
             }
-            
+
             if (user instanceof Employee) {
                 Employee e = (Employee) user;
                 stmt.setString(10, e.getPosition());
@@ -125,13 +121,13 @@ public class UserDaoImpl implements UserDao {
                 stmt.setNull(12, Types.VARCHAR);
                 stmt.setNull(13, Types.INTEGER);
             }
-            
+
             if (user instanceof Admin) {
                 stmt.setString(14, ((Admin) user).getAccessLevel());
             } else {
                 stmt.setNull(14, Types.VARCHAR);
             }
-            
+
             int rows = stmt.executeUpdate();
             if (rows > 0) {
                 try (ResultSet keys = stmt.getGeneratedKeys()) {
@@ -146,7 +142,7 @@ public class UserDaoImpl implements UserDao {
         }
         return false;
     }
-    
+
     @Override
     public boolean update(User user) throws SQLException {
         String sql = "UPDATE users SET login = ?, password_hash = ?, full_name = ?, role = ?, " +
@@ -161,7 +157,7 @@ public class UserDaoImpl implements UserDao {
             stmt.setString(4, user.getRole());
             stmt.setObject(5, user.getGroupId(), Types.INTEGER);
             stmt.setBoolean(6, user.isActive());
-            
+
             if (user instanceof Student) {
                 Student s = (Student) user;
                 stmt.setString(7, s.getGroup());
@@ -172,7 +168,7 @@ public class UserDaoImpl implements UserDao {
                 stmt.setNull(8, Types.INTEGER);
                 stmt.setNull(9, Types.VARCHAR);
             }
-            
+
             if (user instanceof Employee) {
                 Employee e = (Employee) user;
                 stmt.setString(10, e.getPosition());
@@ -191,20 +187,20 @@ public class UserDaoImpl implements UserDao {
                 stmt.setNull(12, Types.VARCHAR);
                 stmt.setNull(13, Types.INTEGER);
             }
-            
+
             if (user instanceof Admin) {
                 stmt.setString(14, ((Admin) user).getAccessLevel());
             } else {
                 stmt.setNull(14, Types.VARCHAR);
             }
-            
+
             stmt.setInt(15, user.getId());
             return stmt.executeUpdate() > 0;
         } catch (ClassNotFoundException e) {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM users WHERE id = ?";
@@ -216,7 +212,7 @@ public class UserDaoImpl implements UserDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public boolean updatePassword(int userId, String newPasswordHash) throws SQLException {
         String sql = "UPDATE users SET password_hash = ? WHERE id = ?";
@@ -229,7 +225,7 @@ public class UserDaoImpl implements UserDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public List<User> findByGroupId(Integer groupId) throws SQLException {
         String sql = "SELECT * FROM users WHERE group_id = ? AND role = 'STUDENT' ORDER BY full_name";
@@ -247,10 +243,7 @@ public class UserDaoImpl implements UserDao {
         }
         return users;
     }
-    
-    /**
-     * Maps a ResultSet row to the appropriate User subclass.
-     */
+
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         String role = rs.getString("role");
         int id = rs.getInt("id");
@@ -259,7 +252,7 @@ public class UserDaoImpl implements UserDao {
         String fullName = rs.getString("full_name");
         boolean isActive = rs.getBoolean("is_active");
         Integer groupId = rs.getObject("group_id", Integer.class);
-        
+
         User user;
         switch (role) {
             case "STUDENT":
@@ -275,7 +268,7 @@ public class UserDaoImpl implements UserDao {
                 student.setStudentIdNumber(rs.getString("student_id_number"));
                 user = student;
                 break;
-                
+
             case "TEACHER":
                 Teacher teacher = new Teacher();
                 teacher.setId(id);
@@ -290,7 +283,7 @@ public class UserDaoImpl implements UserDao {
                 teacher.setTeachingHoursPerWeek(rs.getInt("teaching_hours_per_week"));
                 user = teacher;
                 break;
-                
+
             case "ADMIN":
                 Admin admin = new Admin();
                 admin.setId(id);
@@ -304,11 +297,11 @@ public class UserDaoImpl implements UserDao {
                 admin.setAccessLevel(rs.getString("access_level"));
                 user = admin;
                 break;
-                
+
             default:
                 throw new SQLException("Unknown user role: " + role);
         }
-        
+
         return user;
     }
 }

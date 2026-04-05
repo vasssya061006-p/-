@@ -8,11 +8,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * JDBC implementation of CourseDao.
- */
 public class CourseDaoImpl implements CourseDao {
-    
+
     @Override
     public Course findById(int id) throws SQLException {
         String sql = "SELECT * FROM courses WHERE id = ?";
@@ -29,7 +26,7 @@ public class CourseDaoImpl implements CourseDao {
         }
         return null;
     }
-    
+
     @Override
     public List<Course> findAll() throws SQLException {
         String sql = "SELECT * FROM courses ORDER BY name";
@@ -45,19 +42,19 @@ public class CourseDaoImpl implements CourseDao {
         }
         return courses;
     }
-    
+
     @Override
     public List<Course> findByTeacherId(int teacherId) throws SQLException {
         String sql = "SELECT * FROM courses WHERE teacher_id = ? ORDER BY name";
         return executeQuery(sql, teacherId);
     }
-    
+
     @Override
     public List<Course> findByDepartment(String department) throws SQLException {
         String sql = "SELECT * FROM courses WHERE department = ? ORDER BY name";
         return executeQuery(sql, department);
     }
-    
+
     @Override
     public boolean insert(Course course) throws SQLException {
         String sql = "INSERT INTO courses (name, description, credits, teacher_id, department) " +
@@ -69,7 +66,7 @@ public class CourseDaoImpl implements CourseDao {
             stmt.setInt(3, course.getCredits());
             stmt.setObject(4, course.getTeacherId(), Types.INTEGER);
             stmt.setString(5, course.getDepartment());
-            
+
             int rows = stmt.executeUpdate();
             if (rows > 0) {
                 try (ResultSet keys = stmt.getGeneratedKeys()) {
@@ -84,7 +81,7 @@ public class CourseDaoImpl implements CourseDao {
         }
         return false;
     }
-    
+
     @Override
     public boolean update(Course course) throws SQLException {
         String sql = "UPDATE courses SET name = ?, description = ?, credits = ?, " +
@@ -102,7 +99,7 @@ public class CourseDaoImpl implements CourseDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM courses WHERE id = ?";
@@ -114,7 +111,7 @@ public class CourseDaoImpl implements CourseDao {
             throw new SQLException("Database driver not found", e);
         }
     }
-    
+
     @Override
     public int getStudentCount(int courseId) throws SQLException {
         String sql = "SELECT COUNT(DISTINCT student_id) as student_count FROM academic_records WHERE course_id = ?";
@@ -131,7 +128,7 @@ public class CourseDaoImpl implements CourseDao {
         }
         return 0;
     }
-    
+
     @Override
     public double getAverageGrade(int courseId) throws SQLException {
         String sql = "SELECT AVG(grade_value) as avg_grade FROM academic_records WHERE course_id = ?";
@@ -148,7 +145,7 @@ public class CourseDaoImpl implements CourseDao {
         }
         return 0.0;
     }
-    
+
     private List<Course> executeQuery(String sql, Object param) throws SQLException {
         List<Course> courses = new ArrayList<>();
         try (Connection conn = DatabaseManager.getInstance().getConnection();
@@ -164,7 +161,7 @@ public class CourseDaoImpl implements CourseDao {
         }
         return courses;
     }
-    
+
     private Course mapResultSetToCourse(ResultSet rs) throws SQLException {
         Course course = new Course();
         course.setId(rs.getInt("id"));
