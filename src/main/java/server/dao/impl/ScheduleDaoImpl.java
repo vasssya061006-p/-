@@ -101,6 +101,27 @@ public class ScheduleDaoImpl implements ScheduleDao {
                      "WHERE s.semester = ? ORDER BY s.day_of_week, s.start_time";
         return executeQuery(sql, semester);
     }
+
+    @Override
+    public List<Schedule> findAll() throws SQLException {
+        String sql = "SELECT s.*, c.name as course_name, g.name as group_name, " +
+                "u.full_name as teacher_name FROM schedules s " +
+                "LEFT JOIN courses c ON s.course_id = c.id " +
+                "LEFT JOIN groups g ON s.group_id = g.id " +
+                "LEFT JOIN users u ON s.teacher_id = u.id " +
+                "ORDER BY s.day_of_week, s.start_time";
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            List<Schedule> schedules = new ArrayList<>();
+            while (rs.next()) {
+                schedules.add(mapResultSetToSchedule(rs));
+            }
+            return schedules;
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("Database driver not found", e);
+        }
+    }
     
     @Override
     public boolean insert(Schedule schedule) throws SQLException {

@@ -4,9 +4,6 @@ import server.model.Course;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * Data Access Object interface for Course operations.
- */
 public interface CourseDao {
     
     Course findById(int id) throws SQLException;
@@ -26,4 +23,5 @@ public interface CourseDao {
     int getStudentCount(int courseId) throws SQLException;
     
     double getAverageGrade(int courseId) throws SQLException;
+
 }

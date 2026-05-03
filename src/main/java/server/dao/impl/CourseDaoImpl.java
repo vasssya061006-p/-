@@ -29,7 +29,7 @@ public class CourseDaoImpl implements CourseDao {
         }
         return null;
     }
-    
+
     @Override
     public List<Course> findAll() throws SQLException {
         String sql = "SELECT * FROM courses ORDER BY name";

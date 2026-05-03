@@ -29,7 +29,7 @@ public class GroupDaoImpl implements GroupDao {
         }
         return null;
     }
-    
+
     @Override
     public List<Group> findAll() throws SQLException {
         String sql = "SELECT * FROM groups ORDER BY name";

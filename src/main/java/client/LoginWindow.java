@@ -11,10 +11,6 @@ import server.model.User;
 import server.network.Request;
 import server.network.Response;
 
-/**
- * JavaFX login window for the education system.
- * Connects to server and authenticates users.
- */
 public class LoginWindow extends Application {
     private TextField loginField;
     private PasswordField passwordField;
@@ -24,17 +20,17 @@ public class LoginWindow extends Application {
     public void start(Stage primaryStage) {
         connection = new ServerConnection("localhost", 8080);
         if (!connection.connect()) {
-            showAlert("Connection Error", "Failed to connect to server. Please ensure server is running.");
+            showAlert("Ошибка подключения", "Не удалось подключиться к серверу. Убедитесь, что сервер запущен.");
             System.exit(1);
             return;
         }
 
         // Create UI elements
         GridPane grid = createLoginForm();
-        
+
         Scene scene = new Scene(grid, 400, 250);
         scene.getStylesheets().add(getClass().getResource("/client/styles.css").toExternalForm());
-        primaryStage.setTitle("Education System - Login");
+        primaryStage.setTitle("Система образования - Вход");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -47,31 +43,31 @@ public class LoginWindow extends Application {
         grid.setVgap(10);
 
         // Title
-        Label titleLabel = new Label("Education Management System");
+        Label titleLabel = new Label("Система управления образованием");
         titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         GridPane.setConstraints(titleLabel, 0, 0, 2, 1);
 
         // Login field
-        Label loginLabel = new Label("Login:");
+        Label loginLabel = new Label("Логин:");
         loginField = new TextField();
-        loginField.setPromptText("Enter your login");
-        
+        loginField.setPromptText("Введите ваш логин");
+
         // Password field
-        Label passwordLabel = new Label("Password:");
+        Label passwordLabel = new Label("Пароль:");
         passwordField = new PasswordField();
-        passwordField.setPromptText("Enter your password");
-        
+        passwordField.setPromptText("Введите ваш пароль");
+
         // Login button
-        Button loginButton = new Button("Login");
+        Button loginButton = new Button("Войти");
         loginButton.setDefaultButton(true);
         loginButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;");
         loginButton.setDisable(true);
-        
+
         // Enable button only when fields are not empty
-        loginField.textProperty().addListener((obs, old, newVal) -> 
-            loginButton.setDisable(newVal.trim().isEmpty()));
-        passwordField.textProperty().addListener((obs, old, newVal) -> 
-            loginButton.setDisable(newVal.trim().isEmpty()));
+        loginField.textProperty().addListener((obs, old, newVal) ->
+                loginButton.setDisable(newVal.trim().isEmpty()));
+        passwordField.textProperty().addListener((obs, old, newVal) ->
+                loginButton.setDisable(newVal.trim().isEmpty()));
 
         // Layout
         grid.add(titleLabel, 0, 0, 2, 1);
@@ -93,20 +89,19 @@ public class LoginWindow extends Application {
         String password = passwordField.getText();
 
         if (login.isEmpty() || password.isEmpty()) {
-            showAlert("Validation Error", "Please enter both login and password");
+            showAlert("Ошибка валидации", "Пожалуйста, введите логин и пароль");
             return;
         }
 
-        // Send login request (password is sent in plain text, hashed on server)
         Request request = new Request("LOGIN", new Object[]{login, password});
         Response response = connection.sendRequest(request);
 
         if (response.isSuccess()) {
             User user = (User) response.getData();
-            System.out.println("Login successful: " + user.getFullName() + " (" + user.getRole() + ")");
+            System.out.println("Вход выполнен: " + user.getFullName() + " (" + user.getRole() + ")");
             openMainWindow(user);
         } else {
-            showAlert("Authentication Failed", response.getMessage());
+            showAlert("Ошибка аутентификации", response.getMessage());
             passwordField.clear();
         }
     }
@@ -116,12 +111,11 @@ public class LoginWindow extends Application {
             Stage mainStage = new Stage();
             MainWindow mainWindow = new MainWindow(connection, user);
             mainWindow.start(mainStage);
-            
-            // Close login window
+
             Stage loginStage = (Stage) loginField.getScene().getWindow();
             loginStage.close();
         } catch (Exception e) {
-            showAlert("Error", "Failed to open main window: " + e.getMessage());
+            showAlert("Ошибка", "Не удалось открыть главное окно: " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -34,43 +34,36 @@ public class ClientHandler implements Runnable {
                     break;
                 }
 
-                System.out.println("Received command: " + request.getCommand() + 
-                                 " from user " + request.getUserId());
+                System.out.println("Received command: " + request.getCommand() +
+                        " from user " + request.getUserId());
 
-                Command command = CommandFactory.getCommand(request.getCommand());
-                if (command == null) {
+                try {
+                    Command command = CommandFactory.getCommand(request.getCommand());
+                    Response response = command.execute(request);
+                    sendResponse(response);
+                    System.out.println("Sent response: " + (response.isSuccess() ? "SUCCESS" : "FAILED") +
+                            " - " + response.getMessage());
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Unknown command: " + request.getCommand());
                     sendResponse(new Response(false, "Unknown command: " + request.getCommand(), null));
-                    continue;
                 }
 
-                Response response = command.execute(request);
-                sendResponse(response);
-
-                // Log response status
-                System.out.println("Sent response: " + (response.isSuccess() ? "SUCCESS" : "FAILED") +
-                                 " - " + response.getMessage());
-
-                // Disconnect on logout
                 if ("LOGOUT".equals(request.getCommand())) {
                     System.out.println("Client logged out, closing connection");
                     break;
                 }
             }
         } catch (EOFException e) {
-            System.out.println("Client disconnected unexpectedly: " + socket.getInetAddress());
+            System.out.println("Client disconnected: " + socket.getInetAddress());
         } catch (ClassNotFoundException e) {
-            System.err.println("Class not found during deserialization: " + e.getMessage());
+            System.err.println("Class not found: " + e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {
-            System.err.println("IO error with client " + socket.getInetAddress() + ": " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("Unexpected error handling client request: " + e.getMessage());
+            System.err.println("IO error: " + e.getMessage());
             e.printStackTrace();
-            try {
-                sendResponse(new Response(false, "Server error: " + e.getMessage(), null));
-            } catch (IOException ioException) {
-                System.err.println("Failed to send error response: " + ioException.getMessage());
-            }
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             closeConnection();
         }

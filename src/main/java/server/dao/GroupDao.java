@@ -24,4 +24,5 @@ public interface GroupDao {
     int getStudentCount(int groupId) throws SQLException;
     
     double getAverageGrade(int groupId) throws SQLException;
+
 }

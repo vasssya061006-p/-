@@ -4,9 +4,6 @@ import server.model.AcademicRecord;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * Data Access Object interface for AcademicRecord operations.
- */
 public interface AcademicRecordDao {
     
     AcademicRecord findById(int id) throws SQLException;

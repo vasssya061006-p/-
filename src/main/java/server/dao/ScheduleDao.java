@@ -36,4 +36,6 @@ public interface ScheduleDao {
     List<Schedule> findByTeacherAndTime(int teacherId, String dayOfWeek, String startTime) throws SQLException;
     
     List<Schedule> findByGroupAndTime(int groupId, String dayOfWeek, String startTime) throws SQLException;
+
+    List<Schedule> findAll() throws SQLException;
 }

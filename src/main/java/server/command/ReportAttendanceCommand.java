@@ -1,0 +1,17 @@
+package server.command;
+
+import server.network.Request;
+import server.network.Response;
+import server.service.EducationService;
+
+public class ReportAttendanceCommand implements Command {
+    @Override
+    public Response execute(Request request) {
+        try {
+            String report = EducationService.getInstance().getAttendanceReport();
+            return new Response(true, "Отчёт сгенерирован", report);
+        } catch (Exception e) {
+            return new Response(false, "Ошибка: " + e.getMessage(), null);
+        }
+    }
+}
